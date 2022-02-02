@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const Campground = require('./models/campground');
+const { cache } = require('ejs');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -39,10 +40,14 @@ app.get('/campgrounds/new', async(req, res) => {
     res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', async(req, res) => {
-    const campground = new Campground(req.body.campground);
-    campground.save();
-    res.redirect(`campgrounds/${campground._id}`)
+app.post('/campgrounds', async(req, res, next) => {
+    try {
+        const campground = new Campground(req.body.campground);
+        await campground.save();
+        res.redirect(`campgrounds/${campground._id}`)
+    } catch(e) {
+        next(e);
+    }
 })
 
 app.get('/campgrounds/:id', async(req, res) => {
@@ -55,10 +60,6 @@ app.get('/campgrounds/:id/edit', async(req, res) => {
     res.render('campgrounds/edit', { campground});
 })
 
-app.listen(3000, () => {
-    console.log('Serving on port 3000')
-})
-
 app.put('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, {...req.body.campground});
@@ -69,4 +70,12 @@ app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+})
+
+app.use((err, req, res, next) => {
+    res.send("Oh boy, something went wrong!")
+})
+
+app.listen(3000, () => {
+    console.log('Serving on port 3000')
 })
