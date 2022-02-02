@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
+const catchAsync = require('./utils/catchAsync');
 const methodOverride = require('method-override');
 const Campground = require('./models/campground');
 const { cache } = require('ejs');
@@ -40,20 +41,17 @@ app.get('/campgrounds/new', async(req, res) => {
     res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', async(req, res, next) => {
-    try {
-        const campground = new Campground(req.body.campground);
-        await campground.save();
-        res.redirect(`campgrounds/${campground._id}`)
-    } catch(e) {
-        next(e);
-    }
-})
+app.post('/campgrounds', catchAsync(async(req, res, next) => {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`campgrounds/${campground._id}`)
 
-app.get('/campgrounds/:id', async(req, res) => {
+}))
+
+app.get('/campgrounds/:id', catchAsync(async(req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/show', { campground});
-});
+}));
 
 app.get('/campgrounds/:id/edit', async(req, res) => {
     const campground = await Campground.findById(req.params.id);
