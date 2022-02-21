@@ -25,7 +25,7 @@ const MongoStore = require("connect-mongo");
 
 // const dbUrl = process.env.DB_URL;
 
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     // useCreateIndex: true,
@@ -52,9 +52,12 @@ app.use(mongoSanitize({
     replaceWith: '_',
   }));
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
+    secret,
     crypto: {
         secret: 'squirrel'
     }
@@ -67,7 +70,7 @@ store.on("error", function(e){
 const sessionConfig = {
     store,
     name: 'session',
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -139,7 +142,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-    console.log(req.query);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
