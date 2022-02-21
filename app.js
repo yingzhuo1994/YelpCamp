@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
@@ -50,15 +50,18 @@ app.use(mongoSanitize({
   }));
 
 const sessionConfig = {
-    secret: 'thisshouldbebettersecret!',
+    name: 'session',
+    secret: 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
+
 app.use(session(sessionConfig));
 app.use(flash());
 
