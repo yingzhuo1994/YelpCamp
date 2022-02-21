@@ -111,6 +111,12 @@ const connectSrcUrls = [
     "https://b.tiles.mapbox.com/",
     "https://events.mapbox.com/",
 ];
+
+const imgUrls = [
+    "https://res.cloudinary.com/ddfyausg1/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+    "https://images.unsplash.com/",
+]
+
 const fontSrcUrls = [];
 app.use(
     helmet.contentSecurityPolicy({
@@ -121,13 +127,7 @@ app.use(
             styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
             workerSrc: ["'self'", "blob:"],
             objectSrc: [],
-            imgSrc: [
-                "'self'",
-                "blob:",
-                "data:",
-                "https://res.cloudinary.com/douqbebwk/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
-                "https://images.unsplash.com/",
-            ],
+            imgSrc: ["'self'", "blob:", "data:", ...imgUrls],
             fontSrc: ["'self'", ...fontSrcUrls],
         },
     })
