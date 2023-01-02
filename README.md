@@ -1,5 +1,8 @@
 # YelpCamp
 
+# How to run it locally
+nodemon app.js
+
 # How to set the NODE_ENV on windows 10
 Open terminal in the YelpCamp folder, then run 
 ```
